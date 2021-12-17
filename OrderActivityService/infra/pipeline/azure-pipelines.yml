@@ -1,0 +1,57 @@
+name : NetCore-CI-azure-pipeline.yml
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  SolutionPath: '**/*.sln'
+  
+stages:
+- stage: Build
+  displayName: Build solution
+  jobs:  
+  - job: Build
+    displayName: Build and publish solution
+    steps:
+    - task: UseDotNet@2      
+      displayName: 'Use .NET Core SDK 3.x'
+      inputs:
+        packageType: 'sdk'
+        version: '3.x'      
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore NuGet packages'
+      inputs:
+        command: 'restore'
+        projects: '$(SolutionPath)'
+        feedsToUse: 'select'
+        vstsFeed: '88e8244e-7329-4a2d-a54d-7a7b23729e76/FastFood'
+        includeNuGetOrg: true
+ 
+    - task: DotNetCoreCLI@2
+      displayName: 'Build solution'
+      inputs:
+        command: 'build'
+        projects: '$(SolutionPath)'      
+        
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish solution'
+      inputs:
+        command: 'publish'
+        publishWebProjects: false
+        projects: '$(SolutionPath)'
+        arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+      
+    - task: AzureFunctionApp@1
+      displayName: Deploy Azure Function
+      inputs:
+        azureSubscription: 'AzureServiceConnection'
+        appType: 'functionAppLinux'
+        appName: 'azfun-oas'
+        package: '$(Build.ArtifactStagingDirectory)/**/*.zip'      
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
