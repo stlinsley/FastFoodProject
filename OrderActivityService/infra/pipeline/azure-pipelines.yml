@@ -9,7 +9,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  SolutionPath: '**/*.sln'
+  SolutionPath: 'OrderActivityService/**/*.sln'
   
 stages:
 - stage: Build

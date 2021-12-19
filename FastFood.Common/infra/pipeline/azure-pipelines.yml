@@ -10,7 +10,7 @@ pool:
   vmImage: "windows-latest"
 
 variables:
-  solution: "**/*.sln"
+  solution: "FastFood.Common/**/*.sln"
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
 
@@ -39,7 +39,7 @@ steps:
   - task: DotNetCoreCLI@2
     inputs:
       command: 'pack'
-      packagesToPack: '**/*.csproj'
+      packagesToPack: 'FastFood.Common/**/*.csproj'
       nobuild: true
       versioningScheme: 'off'
   - task: DotNetCoreCLI@2
