@@ -9,7 +9,7 @@ trigger:
       - master
   paths:
     include:
-    - FastFood.Common/**
+    - FastFood.Common/*
 
 pool:
   vmImage: "windows-latest"
