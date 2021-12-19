@@ -8,9 +8,8 @@
 
         public T Deserialize<T>(string serializedObject)
         {
-            return string.IsNullOrEmpty(serializedObject)
-                ? throw new System.ArgumentException($"'{nameof(serializedObject)}' cannot be null or empty.", nameof(serializedObject))
-                : JsonConvert.DeserializeObject<T>(serializedObject);
-        }
+            return !string.IsNullOrEmpty(serializedObject)
+                ? JsonConvert.DeserializeObject<T>(serializedObject)
+                : throw new System.ArgumentNullException($"'{nameof(serializedObject)}' cannot be null or empty.", nameof(serializedObject));        }
     }
 }
